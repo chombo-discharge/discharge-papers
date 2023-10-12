@@ -2,7 +2,9 @@ Publication
 -----------
 
 Title: ...
+
 Authors: ...
+
 DOI: ...
 
 
@@ -10,6 +12,7 @@ Simulation information
 ----------------------
 
 Application: ...
+
 git hash: ...
 
 <Simulation information goes here>

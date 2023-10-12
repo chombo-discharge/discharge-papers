@@ -2,7 +2,9 @@ Publication
 -----------
 
 Title: ...
+
 Authors: ...
+
 DOI: ...
 
 
@@ -10,9 +12,10 @@ Simulation information
 ----------------------
 
 Application: Physics/CdrPlasma/
+
 git hash: 2456b1dd880
 
-Simulation was run on Betzy using up to 25600 CPU cores. 
+Simulation was run on Betzy using up to 25600 CPU cores for about a day, and generated approximately 50 TB of data.
 
 Compilation instructions
 ------------------------

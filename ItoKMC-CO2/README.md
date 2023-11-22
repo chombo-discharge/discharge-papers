@@ -1,7 +1,7 @@
 Publication
 -----------
 
-Title: Kinetic Monte Carlo modeling of streamer discharges in \ch{CO2}
+Title: Kinetic Monte Carlo modeling of streamer discharges in CO2
 
 Authors: Robert Marskar
 

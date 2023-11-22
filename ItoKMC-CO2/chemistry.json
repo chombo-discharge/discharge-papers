@@ -1,0 +1,197 @@
+{
+    "gas" : {
+	// Definition of the background gas. This must contain "background species" and "law".
+	"background species" : [
+	    // Definition of background species. This is an array of species with specified molar fractions. Species names
+	    // can not contain wildcards (@)
+	    {
+		"id": "CO2",
+		"molar fraction": {
+		    "type": "constant",
+		    "value": 1.0
+		},
+		"plot": true
+	    }
+	],
+	// Specify which gas law we use. The user can define multiple gas laws and then later specify which one to use.
+	"law" : {
+	    "id" : "my_ideal_gas", // Specify which gas law we use.
+	    "plot" : true,         // Turn on/off plotting.
+	    "my_ideal_gas" : {
+		// Definition for an ideal gas law. Temperature is always in Kevlin the pressure is in bar. The neutral density
+		// is derived using an ideal gas law.
+		"type" : "ideal",
+		"temperature" : 300,
+		"pressure" : 1.0
+	    }
+	}
+    },
+    "alpha": {
+	"type": "auto",
+	"species": "e"
+    },
+    "eta": {
+	"type": "auto",
+	"species": "e"
+    },    
+    "plasma species" :
+    [
+	// List of plasma species that are tracked. This is an array of species
+	// with various identifiers, some of which are always required (id, Z, type, mobile, diffusive) and
+	// others which are secondary requirements.
+	{
+            "id": "e",          // Species ID
+	    "Z" : -1,           // Charge number
+	    "solver" : "ito",   // Solver type. Either 'ito' or 'cdr'
+	    "mobile" : true,    // Mobile or not
+	    "diffusive" : true, // Diffusive or not
+	    "mobility" : {
+		// Specification of the mobilility coefficient when the species is mobile. User can specify various forms of the mobility. E.g. constant, function-based, or
+		// tabulated vs E/N
+		"type" : "table vs E/N",                      // Specification of tabulated mobility lookup method
+		"file" : "transport_data.dat",                    // File containg the mobility data
+		//"dump" : "debug_mobility.dat",              // Optional argument for dumping table to disk (useful for debugging)		
+		"header" : "E/N (Td)\tMobility *N (1/m/V/s)", // Line immediately preceding the colum data
+		"E/N" : 0,                                    // Column containing E/N
+		"mu*N" : 1,                                   // Column containing mu*N
+		"min E/N" : 1,                                // Minimum E/N kept when resampling table
+		"max E/N" : 2E6,                              // Maximum E/N kept when resampling table
+		"points" : 1000,                              // Number of grid points kept when resampling the table
+		"spacing" : "exponential",                    // Grid point spacing when resampling the table
+		"E/N scale" : 1.0,                            // Optional argument for scaling mobility coefficient
+		"mu*N scale" : 1.0                            // Optional argument for scaling the E/N column
+	    },
+	    "diffusion" : {
+		// Definition of the diffusion coefficient similiar to mobility coefficient above.
+		"type" : "table vs E/N",
+		"file" : "transport_data.dat",
+		//"dump": "debug_diffusion.dat",		
+		"header" : "E/N (Td)\tDiffusion coefficient *N (1/m/s)",
+		"E/N" : 0,
+		"D*N" : 1,
+		"min E/N" : 10,
+		"max E/N" : 2E6,
+		"spacing" : "exponential",
+		"points" : 1000
+	    },
+	    "temperature": {
+		// Definition of the temperature, similar to the mobility coefficient above.
+		"type": "table vs E/N",
+		"file": "transport_data.dat",
+		//"dump": "debug_temperature.dat",				
+		"header" : "E/N (Td)\tMean energy (eV)",
+		"E/N" : 0,
+		"eV" : 1,
+		"min E/N" : 10,
+		"max E/N" : 2E6,
+		"E/N scale": 1.0,
+		"eV scale": 1.0,
+		"spacing" : "exponential",
+		"points" : 1000
+	    },
+	    "initial particles" : [
+		{
+		    // Specification of initial particles sampled uniformly inside of a sphere (circle in 2D). This 
+		    // will distribute the particles over the MPI rank. 			
+		    "sphere distribution" : {
+			"center" : [ 0, 0, 0 ], // Sphere center
+			"radius" : 200E-6,      // Sphere radius
+			"num particles": 100,   // Number computational particles
+			"weight" : 1            // Particle weights
+		    }
+		}
+	    ]
+        },
+	{
+	    // Definition of CO2+ plasma species.
+            "id": "CO2+",           // Species ID
+	    "Z" : 1,                // Charge number
+	    "solver" : "cdr",       // Solver type. Either 'ito' or 'cdr'
+	    "mobile" : true,       // Mobile or not
+	    "diffusive" : false,     // Diffusive or not
+	    "mobility": {
+		"type": "constant",
+		"value": 2E-4
+	    }
+	},
+	{
+	    // Definition of O- plasma species.
+            "id": "O-",             // Species ID
+	    "Z" : -1,               // Charge number
+	    "solver" : "cdr",       // Solver type. Either 'ito' or 'cdr'
+	    "mobile" : true,       // Mobile or not
+	    "diffusive" : false,     // Diffusive or not
+	    "mobility": {
+		"type": "constant",
+		"value": 2E-4
+	    }
+	}
+    ],
+    "photon species":
+    [
+	{
+	    "id": "Y",
+	    "kappa": {
+		"type": "stochastic B",
+		"chi min": 0.255,
+		"chi max": 1.65,
+		"neutral": "CO2"
+	    }
+	}
+    ],
+    "plasma reactions":
+    [
+	{
+	    "reaction": "e + CO2 -> e + e + CO2+",
+	    "description": "Ionization",
+	    "type": "table vs E/N",
+	    "file": "transport_data.dat",
+	    "header": "C14   CO2    Ionization    13.30 eV",
+	    "E/N column": 0,
+	    "rate/N column": 1,
+	    "min E/N": 1,
+	    "max E/N": 2000,
+	    "num points": 1000,
+	    "spacing": "exponential",
+	    "gradient correction": "e",
+	    "plot": true
+	},
+	{
+	    "reaction": "e + CO2 -> (CO) + O-",
+	    "description": "Attachment",
+	    "type": "table vs E/N",
+	    "file": "transport_data.dat",
+	    "header": "C1    CO2    Attachment",
+	    "E/N column": 0,
+	    "rate/N column": 1,
+	    "min E/N": 1,
+	    "max E/N": 2000,
+	    "num points": 1000,
+	    "spacing": "exponential",
+	    "plot": true
+	},
+	{
+	    "reaction": "e + CO2 -> e + CO2 + Y",
+	    "description": "Photogeneration",
+	    "type": "table vs E/N",
+	    "file": "transport_data.dat",
+	    "header": "C14   CO2    Ionization    13.30 eV",
+	    "E/N column": 0,
+	    "rate/N column": 1,
+	    "min E/N": 1,
+	    "efficiency": 1,
+	    "max E/N": 2000,
+	    "num points": 1000,
+	    "spacing": "exponential",
+	    "efficiency vs E/N": "photoi_efficiency.dat",
+	    "gradient correction": "e",
+	    "plot": true
+	}
+    ],
+    "photoionization":
+    [
+	{
+	    "reaction": "Y + (CO2) -> e + CO2+"
+	}
+    ]
+}

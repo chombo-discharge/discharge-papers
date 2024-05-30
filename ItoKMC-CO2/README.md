@@ -5,7 +5,8 @@ Title: A 3D kinetic Monte Carlo study of streamer discharges in CO2
 
 Authors: Robert Marskar
 
-DOI: ...
+DOI: 10.1088/1361-6595/ad28cf
+URL: https://iopscience.iop.org/article/10.1088/1361-6595/ad28cf
 
 
 Simulation information

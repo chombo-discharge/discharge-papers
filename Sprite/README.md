@@ -1,11 +1,12 @@
 Publication
 -----------
 
-Title: ...
+Title: Genesis of column sprites: formation mechanisms and optical structures
 
-Authors: ...
+Authors: Robert Marskar
 
-DOI: ...
+DOI: 10.1088/1361-6595/ad29c0
+URL: https://iopscience.iop.org/article/10.1088/1361-6595/ad29c0
 
 
 Simulation information
